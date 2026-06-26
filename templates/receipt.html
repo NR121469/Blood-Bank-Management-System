@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block page_title %}Acknowledgement Slip{% endblock %}
+{% block page_subtitle %}Official donation record{% endblock %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .sidebar, .content-header, .btn-print, .alert {
+            display: none !important;
+        }
+        .main-content {
+            margin-left: 0 !important;
+        }
+        .content-body {
+            padding: 0 !important;
+        }
+        .receipt-card {
+            border: 1px solid #000 !important;
+            box-shadow: none !important;
+        }
+    }
+    .receipt-card {
+        max-width: 600px;
+        margin: 20px auto;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: white;
+        padding: 40px;
+        box-shadow: var(--shadow-md);
+    }
+    .receipt-header {
+        text-align: center;
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+    .receipt-title {
+        color: var(--accent);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .receipt-details th {
+        width: 150px;
+        color: var(--text-secondary);
+        font-weight: 500;
+        padding: 10px 0;
+    }
+    .receipt-details td {
+        font-weight: 600;
+        padding: 10px 0;
+    }
+    .stamp-area {
+        margin-top: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+    .signature-line {
+        border-top: 1px solid #ccc;
+        width: 200px;
+        text-align: center;
+        padding-top: 5px;
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block header_actions %}
+<div class="btn-group">
+    <button onclick="window.print()" class="btn btn-danger btn-print">
+        <i class="bi bi-printer me-2"></i> Print Slip
+    </button>
+    <a href="{{ url_for('download_pdf', donation_id=donation.donation_id) }}" class="btn btn-primary btn-print">
+        <i class="bi bi-file-earmark-pdf me-2"></i> Download PDF
+    </a>
+    <a href="{{ url_for('donations') }}" class="btn btn-outline-secondary btn-print">
+        <i class="bi bi-arrow-left me-2"></i> Back
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="receipt-card border-0 shadow-sm" style="position: relative; overflow: hidden;">
+    <!-- Background Watermark -->
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 8rem; color: rgba(220, 53, 69, 0.03); font-weight: 900; pointer-events: none; white-space: nowrap; z-index: 0;">
+        LIFELINE BLOOD BANK
+    </div>
+
+    <div class="receipt-header" style="position: relative; z-index: 1;">
+        <div class="mb-3">
+            <i class="bi bi-droplet-fill text-danger" style="font-size: 3.5rem; filter: drop-shadow(0 4px 6px rgba(220, 53, 69, 0.2));"></i>
+        </div>
+        <h2 class="receipt-title mb-1" style="font-size: 1.8rem; letter-spacing: 3px; color: #b91c1c;">Acknowledgment Slip</h2>
+        <p class="text-muted small mb-0 fw-bold" style="letter-spacing: 1px;">OFFICIAL DONATION RECORD</p>
+    </div>
+
+    <div class="px-3" style="position: relative; z-index: 1;">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+                <p class="mb-0 text-muted small text-uppercase fw-bold">Slip Number</p>
+                <p class="mb-0 fw-bolder text-danger" style="font-size: 1.2rem;">LL-DON-{{ "%05d"|format(donation.donation_id) }}</p>
+            </div>
+            <div class="text-end">
+                <p class="mb-0 text-muted small text-uppercase fw-bold">Donation Date</p>
+                <p class="mb-0 fw-bold">{{ donation.donation_date }}</p>
+            </div>
+        </div>
+
+        <div class="p-4 rounded-4 mb-4" style="background: linear-gradient(135deg, #fff 0%, #fff5f5 100%); border: 1px solid #fee2e2;">
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <p class="mb-1 text-muted small text-uppercase fw-bold">Donor Name</p>
+                    <p class="mb-0 fw-bold text-dark" style="font-size: 1.1rem;">{{ donation.donor_name }}</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="mb-1 text-muted small text-uppercase fw-bold">Blood Group</p>
+                    <p class="mb-0"><span class="badge bg-danger px-3 py-2" style="font-size: 1rem;">{{ donation.blood_group }}</span></p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="mb-1 text-muted small text-uppercase fw-bold">Units Donated</p>
+                    <p class="mb-0 fw-bold">{{ donation.units }} Unit(s)</p>
+                </div>
+                <div class="col-sm-6">
+                    <p class="mb-1 text-muted small text-uppercase fw-bold">Contact No.</p>
+                    <p class="mb-0 fw-bold">{{ donation.phone }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 p-4 text-center border-start border-4 border-danger rounded-3" style="background-color: #fef2f2;">
+            <p class="mb-0 text-dark" style="font-size: 1.05rem; line-height: 1.6;">
+                "This is to certify and acknowledge with profound gratitude the voluntary blood donation by <strong>{{ donation.donor_name }}</strong>. Your selfless act is a gift of life to someone in need."
+            </p>
+        </div>
+    </div>
+
+    <div class="stamp-area mt-5 px-3" style="position: relative; z-index: 1;">
+        <div class="text-center">
+            <div style="height: 80px; width: 80px; border: 2px dashed rgba(220, 53, 69, 0.4); border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; color: rgba(220, 53, 69, 0.5); font-size: 10px; font-weight: bold; transform: rotate(-15deg);">OFFICIAL SEAL</div>
+            <span class="small text-muted fw-bold text-uppercase" style="font-size: 9px; letter-spacing: 1px;">Authorized Signatory</span>
+        </div>
+        <div class="text-center">
+            <div class="signature-line mx-auto" style="width: 200px; border-top: 2px solid #334155; margin-top: 40px; padding-top: 8px; color: #334155; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">
+                Medical Officer In-Charge
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-4 btn-print">
+    <p class="text-muted small">Generated on {{ donation.donation_date }}</p>
+</div>
+{% endblock %}
+
+

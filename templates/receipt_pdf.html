@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donation Slip</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            border: 1px solid #ccc;
+            padding: 30px;
+            margin: 20px;
+            border-radius: 5px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #dc3545;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #dc3545;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+        .quote {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            width: 150px;
+            color: #666;
+        }
+        td {
+            font-weight: bold;
+        }
+        .blood-group {
+            color: #dc3545;
+        }
+        .message-box {
+            background-color: #f8f9fa;
+            border: 1px solid #eee;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 14px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+        }
+        .signature-section {
+            width: 100%;
+            margin-top: 50px;
+        }
+        .signature-box {
+            width: 40%;
+            text-align: center;
+        }
+        .seal-box {
+            width: 40%;
+            text-align: center;
+        }
+        .line {
+            border-top: 1px solid #333;
+            margin-top: 40px;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="color: #dc3545; margin: 0; font-size: 24px; letter-spacing: 2px;">LIFELINE BLOOD BANK</h1>
+            <div class="subtitle" style="margin-top: 5px; color: #666; font-size: 10px; letter-spacing: 1px;">DONATION ACKNOWLEDGMENT SLIP</div>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 20px;">
+            <span style="font-size: 10px; color: #666;">Slip No: </span>
+            <span style="font-weight: bold; color: #dc3545;">LL-DON-{{ "%05d"|format(donation.donation_id) }}</span>
+            <br>
+            <span style="font-size: 10px; color: #666;">Date: </span>
+            <span style="font-weight: bold;">{{ donation.donation_date }}</span>
+        </div>
+
+        <div class="quote">
+            "Every drop of blood is a gift of life."
+        </div>
+
+        <table style="background-color: #fffafb; border: 1px solid #fee2e2; border-radius: 10px;">
+            <tr>
+                <th style="padding: 15px;">Donor Name</th>
+                <td style="padding: 15px; font-size: 16px;">{{ donation.donor_name }}</td>
+            </tr>
+            <tr>
+                <th style="padding: 15px;">Blood Group</th>
+                <td style="padding: 15px;"><span style="background-color: #dc3545; color: white; padding: 5px 15px; border-radius: 5px;">{{ donation.blood_group }}</span></td>
+            </tr>
+            <tr>
+                <th style="padding: 15px;">Units Donated</th>
+                <td style="padding: 15px;">{{ donation.units }} Unit(s)</td>
+            </tr>
+            <tr>
+                <th style="padding: 15px;">Contact Number</th>
+                <td style="padding: 15px;">{{ donation.phone }}</td>
+            </tr>
+        </table>
+
+        <div class="message-box" style="margin-top: 30px; border-left: 4px solid #dc3545;">
+            This is to certify and acknowledge with thanks the voluntary blood donation by <strong>{{ donation.donor_name }}</strong>. Your contribution helps us save precious lives.
+        </div>
+
+        <table class="signature-section" style="margin-top: 60px;">
+            <tr>
+                <td class="seal-box" style="border: none; text-align: center;">
+                    <div style="border: 2px dashed #dc3545; color: #dc3545; width: 70px; height: 70px; line-height: 70px; text-align: center; margin: 0 auto; font-size: 10px; font-weight: bold; border-radius: 35px; opacity: 0.5;">SEAL</div>
+                    <div style="margin-top: 5px; color: #666; font-size: 9px; text-transform: uppercase;">Authorized Seal</div>
+                </td>
+                <td style="width: 20%; border: none;"></td>
+                <td class="signature-box" style="border: none; text-align: center; vertical-align: bottom;">
+                    <div style="border-top: 1px solid #333; padding-top: 5px; font-size: 11px; font-weight: bold; text-transform: uppercase;">Medical Officer</div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="footer" style="margin-top: 80px; border-top: 1px solid #eee; padding-top: 10px;">
+            This is a computer generated document. <br>
+            LIFELINE BLOOD BANK MANAGEMENT SYSTEM
+        </div>
+    </div>
+</body>
+</html>

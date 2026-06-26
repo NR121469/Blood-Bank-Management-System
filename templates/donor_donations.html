@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block page_title %}Donation History{% endblock %}
+{% block page_subtitle %}Showing all donations for {{ donor.name }}{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('donors') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-2"></i> Back to Donors
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Donor Info Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+            <div class="card-body p-4 text-center">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-person-fill" style="font-size: 40px;"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ donor.name }}</h4>
+                <p class="text-muted mb-3">Donor ID: #{{ donor.donor_id }}</p>
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <span class="badge bg-danger px-3 py-2">{{ donor.blood_group }}</span>
+                    <span class="badge bg-light text-dark border px-3 py-2">{{ donor.gender }}</span>
+                    <span class="badge bg-light text-dark border px-3 py-2">{{ donor.age }} Years</span>
+                </div>
+                <hr>
+                <div class="text-start mt-4">
+                    <p class="mb-2 text-muted small text-uppercase fw-bold">Contact Info</p>
+                    <p class="mb-0 fw-medium"><i class="bi bi-telephone text-danger me-2"></i> {{ donor.phone }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donations List -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-droplet-fill text-danger me-2"></i> Donation Records</h6>
+            </div>
+            <div class="card-body p-0">
+                {% if donations %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Donation ID</th>
+                                <th>Units</th>
+                                <th>Blood Group</th>
+                                <th>Date</th>
+                                <th class="text-end pe-4">Receipt / Slip</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for don in donations %}
+                            <tr>
+                                <td class="ps-4 text-muted">#{{ don.donation_id }}</td>
+                                <td class="fw-bold">{{ don.units }} Unit(s)</td>
+                                <td><span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">{{ don.blood_group }}</span></td>
+                                <td>{{ don.donation_date }}</td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ url_for('donation_receipt', donation_id=don.donation_id) }}" class="btn btn-sm btn-outline-secondary" title="View Slip">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                    <a href="{{ url_for('download_pdf', donation_id=don.donation_id) }}" class="btn btn-sm btn-danger ms-1" title="Download PDF">
+                                        <i class="bi bi-file-earmark-pdf"></i> PDF
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-heart-pulse text-muted opacity-25" style="font-size: 4rem;"></i>
+                    </div>
+                    <p class="text-muted">No donations found for this donor.</p>
+                    <a href="{{ url_for('donations') }}" class="btn btn-sm btn-danger mt-2">Record first donation</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

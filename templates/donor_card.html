@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block page_title %}Donor Profile Card{% endblock %}
+{% block page_subtitle %}Official Identification Card for {{ donor.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .id-card {
+        width: 400px;
+        margin: 40px auto;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 1px solid #eee;
+        position: relative;
+    }
+    .id-card-header {
+        background: linear-gradient(135deg, #dc3545 0%, #b91c1c 100%);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+    .id-card-body {
+        padding: 30px;
+        display: flex;
+    }
+    .photo-area {
+        width: 100px;
+        height: 120px;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 25px;
+    }
+    .details-area {
+        flex: 1;
+    }
+    .detail-item {
+        margin-bottom: 12px;
+    }
+    .detail-label {
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+    .detail-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    .blood-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 18px;
+    }
+    .id-card-footer {
+        background: #f8fafc;
+        padding: 15px;
+        text-align: center;
+        border-top: 1px solid #eee;
+    }
+    @media print {
+        .sidebar, .content-header, .btn-print {
+            display: none !important;
+        }
+        .main-content {
+            margin-left: 0 !important;
+        }
+        body {
+            background: white !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block header_actions %}
+<button onclick="window.print()" class="btn btn-danger btn-print">
+    <i class="bi bi-printer me-2"></i> Print Card
+</button>
+<a href="{{ url_for('donors') }}" class="btn btn-outline-secondary btn-print">
+    <i class="bi bi-arrow-left me-2"></i> Back
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="id-card">
+    <div class="id-card-header">
+        <h5 class="mb-0 fw-bold">LIFELINE BLOOD BANK</h5>
+        <p class="small mb-0 opacity-75">DONOR IDENTIFICATION CARD</p>
+        <div class="blood-badge">{{ donor.blood_group }}</div>
+    </div>
+    <div class="id-card-body">
+        <div class="photo-area">
+            <i class="bi bi-person-fill text-muted" style="font-size: 60px;"></i>
+        </div>
+        <div class="details-area">
+            <div class="detail-item">
+                <div class="detail-label">Full Name</div>
+                <div class="detail-value text-uppercase">{{ donor.name }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Donor ID</div>
+                <div class="detail-value">#{{ donor.donor_id }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Date of Birth</div>
+                <div class="detail-value">{{ donor.dob }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Gender</div>
+                <div class="detail-value">{{ donor.gender }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="id-card-footer">
+        <p class="small text-muted mb-0 fw-bold">PHONE: {{ donor.phone }}</p>
+    </div>
+</div>
+
+<div class="text-center text-muted small mt-2 btn-print">
+    <p>Every donor is a lifesaver. Thank you for your contribution.</p>
+</div>
+{% endblock %}

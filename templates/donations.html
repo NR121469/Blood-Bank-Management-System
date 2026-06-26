@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block page_title %}Donations{% endblock %}
+{% block page_subtitle %}Record and track blood donations{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4 col-md-5">
+        <div class="card">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-plus-circle text-danger me-2"></i> Record Donation</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('donations') }}">
+                    <div class="mb-3">
+                        <label for="donor_id" class="form-label">Select Donor</label>
+                        <select class="form-select" id="donor_id" name="donor_id" required>
+                            <option value="">Select Donor</option>
+                            {% for donor in donors %}
+                            <option value="{{ donor.donor_id }}" data-blood-group="{{ donor.blood_group }}">{{ donor.name }} ({{ donor.blood_group }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Blood Group</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-droplet-fill text-danger"></i></span>
+                            <input type="text" id="display_blood_group" class="form-control bg-light" placeholder="Auto-detected" readonly>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="units" class="form-label">Units Donated</label>
+                        <input type="number" class="form-control" id="units" name="units" min="1" required placeholder="e.g. 1">
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100">Record Donation</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-7">
+        <div class="card">
+            <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+                <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-table text-danger me-2"></i> Donation History</h6>
+                <span class="badge bg-light text-muted border">{{ donations|length }} records</span>
+            </div>
+            <div class="card-body">
+                {% if donations %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr class="table-light">
+                                <th>S.No</th>
+                                <th>Donor Name</th>
+                                <th>Blood</th>
+                                <th>Units</th>
+                                <th>Date</th>
+                                <th class="text-end">Receipt / Slip</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for don in donations %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td class="fw-bold">{{ don.donor_name }}</td>
+                                <td><span class="badge bg-danger">{{ don.blood_group }}</span></td>
+                                <td>{{ don.units }}</td>
+                                <td>{{ don.donation_date }}</td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a href="{{ url_for('donation_receipt', donation_id=don.donation_id) }}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a href="{{ url_for('download_pdf', donation_id=don.donation_id) }}" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-file-earmark-pdf"></i> PDF
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-heart" style="font-size:40px;color:var(--border-color);"></i>
+                    <p class="text-muted mt-2 mb-0">No donations recorded yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const donorSelect = document.getElementById('donor_id');
+    const displayBG = document.getElementById('display_blood_group');
+
+    donorSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const bloodGroup = selectedOption.getAttribute('data-blood-group');
+        displayBG.value = bloodGroup || '';
+    });
+});
+</script>
+{% endblock %}

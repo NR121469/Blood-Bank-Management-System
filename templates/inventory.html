@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory | Blood Bank Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Compact Medical Theme */
+    .inventory-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .stock-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 140px;
+    }
+
+    .stock-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--theme-color);
+    }
+
+    .stock-card.active {
+        border-color: var(--theme-color);
+        box-shadow: 0 0 0 2px var(--theme-color);
+    }
+
+    .stock-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: var(--theme-color, var(--accent));
+    }
+
+    .blood-group-badge {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-primary);
+    }
+
+    .status-indicator {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 12px;
+    }
+
+    .unit-display {
+        margin: 0.5rem 0;
+    }
+
+    .unit-count {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .unit-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-left: 0.25rem;
+    }
+
+    .custom-progress {
+        height: 5px;
+        background: #f1f5f9;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+
+    .custom-progress-bar {
+        height: 100%;
+        background: var(--theme-color);
+        width: var(--progress-width, 0%);
+        transition: width 0.8s ease;
+    }
+
+    /* Theme colors */
+    .theme-danger { --theme-color: #ef4444; --theme-bg: #fee2e2; --theme-text: #991b1b; }
+    .theme-warning { --theme-color: #f59e0b; --theme-bg: #fef3c7; --theme-text: #92400e; }
+    .theme-success { --theme-color: #10b981; --theme-bg: #d1fae5; --theme-text: #065f46; }
+
+    .update-card {
+        position: sticky;
+        top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block page_title %}Inventory{% endblock %}
+{% block page_subtitle %}Stock Status Overview{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-xl-9 col-lg-8">
+        <div class="inventory-grid">
+            {% for stock in inventory %}
+                {% set max_capacity = 100 %}
+                {% set width_pct = (stock.units / max_capacity * 100)|int %}
+                {% if width_pct > 100 %}{% set width_pct = 100 %}{% endif %}
+                
+                {% if stock.units < 10 %}
+                    {% set theme_class = "theme-danger" %}
+                    {% set status_label = "Critical" %}
+                {% elif stock.units < 30 %}
+                    {% set theme_class = "theme-warning" %}
+                    {% set status_label = "Low" %}
+                {% else %}
+                    {% set theme_class = "theme-success" %}
+                    {% set status_label = "Optimal" %}
+                {% endif %}
+
+                <div class="stock-card {{ theme_class }}" onclick="selectBloodGroup('{{ stock.blood_group }}', this)">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="blood-group-badge">{{ stock.blood_group }}</div>
+                        <span class="status-indicator" style="background: var(--theme-bg); color: var(--theme-text);">
+                            {{ status_label }}
+                        </span>
+                    </div>
+
+                    <div class="unit-display">
+                        <span class="unit-count">{{ stock.units }}</span>
+                        <span class="unit-label">units</span>
+                    </div>
+
+                    <div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted" style="font-size: 0.7rem;">Capacity</small>
+                            <small class="fw-bold" style="font-size: 0.7rem; color: var(--theme-color);">{{ width_pct }}%</small>
+                        </div>
+                        <div class="custom-progress">
+                            <div class="custom-progress-bar" style="--progress-width: {{ width_pct }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-4">
+        <div class="card update-card border-0 shadow-sm">
+            <div class="card-body p-3">
+                <h6 class="mb-3 fw-bold"><i class="bi bi-gear-wide-connected text-danger me-2"></i>Stock Adjustment</h6>
+
+                <form method="POST" action="{{ url_for('inventory') }}" id="updateForm">
+                    <div class="mb-3">
+                        <label for="blood_group" class="form-label small fw-bold text-muted">Blood Group</label>
+                        <select class="form-select form-select-sm" id="blood_group" name="blood_group" required>
+                            <option value="" selected disabled>Select...</option>
+                            {% for stock in inventory %}
+                            <option value="{{ stock.blood_group }}">{{ stock.blood_group }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="adjustment" class="form-label small fw-bold text-muted">Adjustment (+/-)</label>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control" id="adjustment" name="adjustment" required placeholder="e.g. -5 or +10">
+                            <span class="input-group-text">units</span>
+                        </div>
+                        <div class="form-text mt-1" style="font-size: 0.65rem;">
+                            Use negative numbers to remove stock (e.g., expiry).
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reason" class="form-label small fw-bold text-muted">Reason</label>
+                        <select class="form-select form-select-sm" id="reason" name="reason" required>
+                            <option value="Audit Correction">Audit Correction</option>
+                            <option value="Expired Stock">Expired Stock</option>
+                            <option value="Leakage/Damage">Leakage/Damage</option>
+                            <option value="Error Correction">Error Correction</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold">
+                        Apply Adjustment
+                    </button>
+                    <p class="text-center mt-2 mb-0" style="font-size: 0.65rem; color: #94a3b8;">
+                        <i class="bi bi-info-circle me-1"></i>Click a card to auto-select
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function selectBloodGroup(bg, element) {
+    // Set dropdown value
+    document.getElementById('blood_group').value = bg;
+    
+    // Highlight selected card
+    document.querySelectorAll('.stock-card').forEach(card => card.classList.remove('active'));
+    element.classList.add('active');
+    
+    // Focus adjustment input for quick entry
+    document.getElementById('adjustment').focus();
+    
+    // Subtle animation effect
+    element.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+        element.style.transform = '';
+    }, 100);
+}
+</script>
+{% endblock %}
+

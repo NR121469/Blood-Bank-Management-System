@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block page_title %}Blood Requests{% endblock %}
+{% block page_subtitle %}Submit and track patient blood requests{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4 col-md-5">
+        <div class="card">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-plus-circle text-danger me-2"></i> New Blood Request</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('requests_page') }}">
+                    <div class="mb-3">
+                        <label for="patient_name" class="form-label">Patient Name</label>
+                        <input type="text" class="form-control" id="patient_name" name="patient_name" required placeholder="e.g. Amit Kumar">
+                    </div>
+                    <div class="mb-3">
+                        <label for="hospital_name" class="form-label">Hospital Name</label>
+                        <input type="text" class="form-control" id="hospital_name" name="hospital_name" required placeholder="e.g. City Hospital">
+                    </div>
+                    <div class="mb-3">
+                        <label for="blood_group" class="form-label">Blood Group</label>
+                        <select class="form-select" id="blood_group" name="blood_group" required>
+                            <option value="">Select</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="units_required" class="form-label">Units Required</label>
+                        <input type="number" class="form-control" id="units_required" name="units_required" min="1" required placeholder="e.g. 2">
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100"><i class="bi bi-send"></i> Submit Request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-7">
+        <div class="card">
+            <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
+                <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-table text-danger me-2"></i> All Requests</h6>
+                <span class="badge bg-light text-muted border">{{ requests|length }} records</span>
+            </div>
+            <div class="card-body">
+                {% if requests %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead><tr><th>S.No</th><th>Patient</th><th>Hospital</th><th>Blood Group</th><th>Units</th><th>Status</th></tr></thead>
+                        <tbody>
+                            {% for req in requests %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td style="font-weight:500;">{{ req.patient_name }}</td>
+                                <td>{{ req.hospital_name }}</td>
+                                <td><span class="badge bg-danger">{{ req.blood_group }}</span></td>
+                                <td>{{ req.units_required }}</td>
+                                <td>
+                                    {% if req.status == 'Approved' %}
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Approved</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-clipboard2" style="font-size:40px;color:var(--border-color);"></i>
+                    <p class="text-muted mt-2 mb-0">No requests found.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

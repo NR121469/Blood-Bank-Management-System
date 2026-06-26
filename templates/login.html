@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Blood Bank Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .login-card {
+        background: #ffffff;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        padding: 48px 40px;
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .login-icon {
+        width: 72px;
+        height: 72px;
+        background: var(--accent);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 32px;
+        color: #fff;
+    }
+
+    .login-card h3 {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-align: center;
+        margin-bottom: 4px;
+        letter-spacing: -0.3px;
+    }
+
+    .login-card .login-sub {
+        font-size: 13px;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .login-card .form-control {
+        padding: 11px 16px;
+        font-size: 14px;
+        border: 1.5px solid var(--border-color);
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .login-card .form-control:focus {
+        background: #fff;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .login-card .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .login-card .btn-login {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+        font-weight: 600;
+        background: var(--accent);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        transition: var(--transition);
+    }
+
+    .login-card .btn-login:hover {
+        background: var(--accent-light);
+    }
+
+    .login-footer {
+        text-align: center;
+        margin-top: 24px;
+        font-size: 12px;
+        color: rgba(255,255,255,0.4);
+        position: relative;
+        z-index: 1;
+    }
+</style>
+{% endblock %}
+
+{% block layout %}
+<div class="login-wrapper">
+    <div>
+        <div class="login-card">
+            <!-- Blood Drop Icon -->
+            <div class="login-icon">
+                <i class="bi bi-droplet-fill"></i>
+            </div>
+
+            <h3>Blood Bank System</h3>
+            <p class="login-sub">Admin Login</p>
+
+            <!-- Logout Message (via Query Param) -->
+            {% if logout_msg %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert" style="font-size: 13px;">
+                You have been logged out.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding: 0.75rem 1rem;"></button>
+            </div>
+            {% endif %}
+
+            <!-- Flash Messages (Other) -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="font-size: 13px;">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" style="padding: 0.75rem 1rem;"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Error Message (Legacy) -->
+            {% if error %}
+            <div class="alert alert-danger text-center" role="alert" style="font-size: 13px;">
+                <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+            </div>
+            {% endif %}
+
+            <!-- Login Form -->
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="mb-3">
+                    <label for="username" class="form-label">
+                        <i class="bi bi-person-fill" style="color: var(--accent);"></i> Username
+                    </label>
+                    <input type="text" class="form-control" id="username"
+                           name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">
+                        <i class="bi bi-lock-fill" style="color: var(--accent);"></i> Password
+                    </label>
+                    <input type="password" class="form-control" id="password"
+                           name="password" placeholder="Enter your password" required autocomplete="new-password" data-lpignore="true">
+                </div>
+                <button type="submit" class="btn btn-login">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </button>
+            </form>
+        </div>
+
+        <p class="login-footer">
+            &copy; 2026 Blood Bank Management System
+        </p>
+    </div>
+</div>
+{% endblock %}
